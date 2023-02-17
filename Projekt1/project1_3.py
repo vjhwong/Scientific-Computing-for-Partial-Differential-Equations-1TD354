@@ -34,32 +34,36 @@ def run_simulation(mx=100, order=2, show_animation=True):
     tau_r = -(c**2)  # tau right
 
     # Space discretization
-    hx = (xr - xl) / mx
+    hx = (xr - xl) / (mx - 1)
     xvec = np.linspace(xl, xr - hx, mx)  # periodic, u(xl) = u(xr)
     n_points_x = len(xvec)
 
-    _, HI, _, D2, e_l, e_r, d1_l, d1_r = ops.sbp_cent_2nd(mx, hx)
+    if order == 2:
+        _, HI, _, D2, e_l, e_r, d1_l, d1_r = ops.sbp_cent_2nd(mx, hx)
+    elif order == 4:
+        _, HI, _, D2, e_l, e_r, d1_l, d1_r = ops.sbp_cent_4th(mx, hx)
+    elif order == 6:
+        _, HI, _, D2, e_l, e_r, d1_l, d1_r = ops.sbp_cent_6th(mx, hx)
+    else:
+        raise NotImplementedError("Order not implemented")
 
     # Define phi and phi_t
     phi = f(xvec)
     phi_t = np.zeros(n_points_x)
 
     # Define right-hand-side function
-    # w = [w1, w2]^T
-    w = np.array([phi, phi_t]).reshape(-1, 1)
-
-    def rhs(u):
-        u_t = np.zeros((2 * n_points_x, 1))
-        Du = (
-            (c**2) * D2 @ u[n_points_x:]
-            + tau_l * HI @ e_l.T @ d1_l @ u[n_points_x:]
-            + tau_r * HI @ e_r.T @ d1_r @ u[n_points_x:]
+    def rhs(w):
+        w_t = np.zeros((2 * n_points_x, 1))
+        Dw = (
+            (c**2) * D2 @ w[:n_points_x]
+            + tau_l * HI @ e_l.T @ d1_l @ w[:n_points_x]
+            + tau_r * HI @ e_r.T @ d1_r @ w[:n_points_x]
         )
         # dw1/dt = w2
-        u_t[:n_points_x] = Du
+        w_t[n_points_x:] = Dw
         # dw2/dt = rhs equation for v_tt
-        u_t[n_points_x:] = u[:n_points_x]
-        return u_t
+        w_t[:n_points_x] = w[n_points_x:]
+        return w_t
 
     # Time discretization
     ht_try = 0.1 * hx / c
@@ -68,6 +72,8 @@ def run_simulation(mx=100, order=2, show_animation=True):
 
     # Initialize time variable and solution vector
     t = 0
+    # w = [w1, w2]^T
+    w = np.array([phi, phi_t]).reshape(-1, 1)
 
     # Initialize plot for animation
     if show_animation:
@@ -97,7 +103,7 @@ def run_simulation(mx=100, order=2, show_animation=True):
         plt.close()
 
     # Return first half of w vector which
-    return w[n_points_x:], T, xvec, hx, L, c
+    return w, T, xvec, hx, L, c
 
 
 def exact_solution(t, xvec, L, c):
@@ -130,9 +136,10 @@ def plot_final_solution(u, u_exact, xvec, T):
 
 
 def main():
-    m = 400  # Number of grid points, integer > 15.
-    order = 4  # Order of accuracy. 2, 4, 6, 8, 10, or 12.
-    u, T, xvec, hx, L, c = run_simulation(m, order, show_animation=True)
+    m = 200  # Number of grid points, integer > 15.
+    order = 2  # Order of accuracy. 2, 4, 6, 8, 10, or 12.
+    u, T, xvec, hx, L, c = run_simulation(m, order, show_animation=False)
+    u = u[:m]
     u_exact = exact_solution(T, xvec, L, c)
     error = compute_error(u, u_exact, hx)
     print(f"L2-error: {error:.2e}")

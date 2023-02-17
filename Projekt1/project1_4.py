@@ -79,34 +79,13 @@ def run_simulation(mx=100, order=2, show_animation=True):
     # Initialize time variable and solution vector
     t = 0
 
-    # Initialize plot for animation
-    # if show_animation:
-    #     fig, ax = plt.subplots()
-    #     [line] = ax.plot(xvec, w[:n_points_x], label="Approximation")
-    #     ax.set_xlim([xl, xr - hx])
-    #     ax.set_ylim([-1, 1.2])
-    #     title = plt.title(f"t = {0:.2f}")
-    #     plt.draw()
-    #     plt.pause(1)
-
     # Loop over all time steps
     for _ in range(mt - 1):
 
         # Take one step with the fourth order Runge-Kutta method.
         w, t = rk4.step(rhs, w, t, ht)
 
-        # Update plot every 50th time step
-        # if tidx % 50 == 0 and show_animation:
-        #     line.set_ydata(w[:n_points_x])
-        #     title.set_text(f"t = {t:.2f}")
-        #     plt.draw()
-        #     plt.pause(1e-8)
-
-    # Close figure window
-    # if show_animation:
-    #     plt.close()
-
-    return w[:n_points_x], T, xvec, hx, L, c
+    return w, T, xvec, hx, L, c
 
 
 def exact_solution(t, xvec, L, c):
@@ -127,59 +106,33 @@ def compute_error(u, u_exact, hx):
     return relative_l2_error
 
 
-# def plot_final_solution(u, u_exact, xvec, T):
-#     fig, ax = plt.subplots()
-#     ax.plot(xvec, u, label="Approximation")
-#     plt.plot(xvec, u_exact, "r--", label="Exact")
-#     ax.set_xlim([xvec[0], xvec[-1]])
-#     ax.set_ylim([-1, 1.2])
-#     plt.title(f"t = {T:.2f}")
-#     plt.legend()
-#     plt.show()
-
-
-def error_converge_rate(m, order):
+def error(m, order):
     u, T, xvec, hx, L, c = run_simulation(m, order, show_animation=False)
+    u = u[:m]
     u_exact = exact_solution(T, xvec, L, c)
     error = compute_error(u, u_exact, hx)
-    return error
+    return (hx, error)
+
+
+def convergence_study(m_vec, order_vec):
+    error_vec = np.zeros((len(order_vec), len(m_vec)))
+    h_vec = np.zeros((len(order_vec), len(m_vec)))
+
+    for i, order in enumerate(order_vec):
+        print(f"Order: {order}")
+        for j, m in enumerate(m_vec):
+            print(f"m: {m}")
+            h_vec[i, j], error_vec[i, j] = error(m, order)
+    return (h_vec, error_vec)
 
 
 def main():
-    m_vec = np.array([25, 50, 100, 200, 400])  # Number of grid points
-    order_vec = np.array([2, 4, 6])  # Order of accuracy
-    # order_vec = np.array([2])
-
-    error_dict = {}
-
-    for order in order_vec:
-        error_dict[order] = []
-        for m in m_vec:
-            print(f"m: {m}")
-            error_dict[order].append(error_converge_rate(m, order))
-    print(error_dict)
-    # errors = np.zeros((len(order_vec), len(m_vec)))
-    # h_vec = np.zeros((len(order_vec), len(m_vec)))
-    # for i, order in enumerate(order_vec):
-    #     for j, m in enumerate(m_vec):
-    #         print(f"Order: {order}, m: {m}", end=", ")
-    #         u, T, xvec, hx, L, c = run_simulation(m, order, show_animation=False)
-    #         print(f"Grid-space: {hx}")
-    #         u = u[m:]
-    #         u_exact = exact_solution(T, xvec, L, c)
-    #         error = compute_error(u, u_exact, hx)
-    #         h_vec[i, j] = hx
-    #         errors[i, j] = error
-
-    # print(errors)
-
-    # plt.loglog(h_vec[0, :], errors[0, :], label="2nd order")
-    # # plt.loglog(h_vec[1, :], errors[1, :], label="4th order")
-    # # plt.loglog(h_vec[2, :], errors[2, :], label="6th order")
-    # plt.xlabel("Grid-spacing [h]")
-    # plt.ylabel("Error l^2 norm")
-    # plt.legend()
-    # plt.show()
+    # m_vec = np.array([25, 50, 100, 200, 400])
+    # order_vec = np.array([2, 4, 6])
+    m_vec = np.array([25, 50, 100])
+    order_vec = np.array([2])
+    h_vec, error_vec = convergence_study(m_vec, order_vec)
+    print(error_vec)
 
 
 if __name__ == "__main__":
