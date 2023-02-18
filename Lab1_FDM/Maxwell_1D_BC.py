@@ -43,7 +43,7 @@ order = 6
 # 2 - Magnetic field at both boundaries
 # 3 - Linear combination E + beta*H and E - beta*H at left and right boundary, respectively
 # 4 - Both electric and magnetic field at both boundaries
-bc_type = 4
+bc_type = 1
 
 # If bc_type 3, specify beta
 beta = -2

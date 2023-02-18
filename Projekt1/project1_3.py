@@ -16,11 +16,13 @@ def f(x):
 
 
 def run_simulation(mx=100, order=2, show_animation=True):
-    """Solves the advection equation using finite differences
+    """
+    Solves the advection equation using finite differences
     and Runge-Kutta 4.
 
     Method parameters:
-    mx:     Number of grid points, integer > 15.
+    mx:     Number of intervals, integer > 15.
+    mx + 1: Number of grid points
     order:  Order of accuracy, 2, 4, 6, 8, 10 or 12
     """
 
@@ -34,16 +36,16 @@ def run_simulation(mx=100, order=2, show_animation=True):
     tau_r = -(c**2)  # tau right
 
     # Space discretization
-    hx = (xr - xl) / (mx - 1)
-    xvec = np.linspace(xl, xr - hx, mx)  # periodic, u(xl) = u(xr)
+    hx = (xr - xl) / mx
+    xvec = np.linspace(xl, xr, mx + 1)
     n_points_x = len(xvec)
 
     if order == 2:
-        _, HI, _, D2, e_l, e_r, d1_l, d1_r = ops.sbp_cent_2nd(mx, hx)
+        _, HI, _, D2, e_l, e_r, d1_l, d1_r = ops.sbp_cent_2nd(n_points_x, hx)
     elif order == 4:
-        _, HI, _, D2, e_l, e_r, d1_l, d1_r = ops.sbp_cent_4th(mx, hx)
+        _, HI, _, D2, e_l, e_r, d1_l, d1_r = ops.sbp_cent_4th(n_points_x, hx)
     elif order == 6:
-        _, HI, _, D2, e_l, e_r, d1_l, d1_r = ops.sbp_cent_6th(mx, hx)
+        _, HI, _, D2, e_l, e_r, d1_l, d1_r = ops.sbp_cent_6th(n_points_x, hx)
     else:
         raise NotImplementedError("Order not implemented")
 
@@ -53,7 +55,7 @@ def run_simulation(mx=100, order=2, show_animation=True):
 
     # Define right-hand-side function
     def rhs(w):
-        w_t = np.zeros((2 * n_points_x, 1))
+        w_t = np.zeros((len(w), 1))
         Dw = (
             (c**2) * D2 @ w[:n_points_x]
             + tau_l * HI @ e_l.T @ d1_l @ w[:n_points_x]
@@ -73,7 +75,7 @@ def run_simulation(mx=100, order=2, show_animation=True):
     # Initialize time variable and solution vector
     t = 0
     # w = [w1, w2]^T
-    w = np.array([phi, phi_t]).reshape(-1, 1)
+    w = np.array([phi, phi_t]).reshape(-1, 1)  # Make column vector
 
     # Initialize plot for animation
     if show_animation:
@@ -101,16 +103,14 @@ def run_simulation(mx=100, order=2, show_animation=True):
     # Close figure window
     if show_animation:
         plt.close()
-
     # Return first half of w vector which
     return w, T, xvec, hx, L, c
 
 
-def exact_solution(t, xvec, L, c):
-    T1 = L / c  # Time for one lap
-    t_eff = (t / T1 - np.floor(t / T1)) * T1  # "Effective" time, using periodicity
-    u_exact = f(xvec - c * t_eff)
-    return u_exact
+def exact_solution(x, t, c, n):
+    k = n * np.pi
+    omega = c * k
+    return np.cos(k * x) * np.cos(omega * t)
 
 
 def l2_norm(vec, h):
@@ -136,11 +136,12 @@ def plot_final_solution(u, u_exact, xvec, T):
 
 
 def main():
-    m = 200  # Number of grid points, integer > 15.
-    order = 2  # Order of accuracy. 2, 4, 6, 8, 10, or 12.
+    m = 100  # Number of grid points, integer > 15.
+    order = 4  # Order of accuracy. 2, 4, 6, 8, 10, or 12.
+    n = 2
     u, T, xvec, hx, L, c = run_simulation(m, order, show_animation=False)
-    u = u[:m]
-    u_exact = exact_solution(T, xvec, L, c)
+    u = u[: m + 1]
+    u_exact = exact_solution(xvec, T, c, n)
     error = compute_error(u, u_exact, hx)
     print(f"L2-error: {error:.2e}")
     plot_final_solution(u, u_exact, xvec, T)
