@@ -41,8 +41,6 @@ def run_simulation(mx=200, my=100):
     hy = 2 / my
     xvec = np.linspace(x_west, x_east, mx + 1)
     yvec = np.linspace(y_north, y_south, my + 1)
-    len_x = len(xvec)
-    len_y = len(yvec)
     X, Y = np.meshgrid(xvec, yvec)
 
     # Create SBP Operators
