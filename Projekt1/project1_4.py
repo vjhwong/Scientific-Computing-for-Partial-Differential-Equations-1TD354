@@ -124,39 +124,40 @@ def plot_convergence(h_vec, error_vec):
         (error_vec[0, 0] / (2 ** (2 * i))) for i in range(error_vec.shape[1])
     ]
     fourth_order_ref = [
-        (error_vec[1, 0] / (2 ** (2 * i))) for i in range(error_vec.shape[1])
+        (error_vec[1, 0] / (2 ** (4 * i))) for i in range(error_vec.shape[1])
     ]
     sixth_order_ref = [
-        (error_vec[2, 0] / (2 ** (2 * i))) for i in range(error_vec.shape[1])
+        (error_vec[2, 0] / (2 ** (6 * i))) for i in range(error_vec.shape[1])
     ]
     fig, ax = plt.subplots()
     ax.loglog(
         h_vec[0, :],
         second_order_ref,
-        color="blue",
+        color="mediumturquoise",
         linestyle="--",
         label="2nd order reference",
     )
-    ax.loglog(h_vec[0, :], error_vec[0, :], color="blue", label="2nd order")
+    ax.loglog(h_vec[0, :], error_vec[0, :], color="mediumturquoise", label="2nd order")
     ax.loglog(
         h_vec[1, :],
         fourth_order_ref,
-        color="green",
+        color="khaki",
         linestyle="--",
         label="4th order reference",
     )
-    ax.loglog(h_vec[1, :], error_vec[1, :], color="green", label="4th order")
+    ax.loglog(h_vec[1, :], error_vec[1, :], color="khaki", label="4th order")
     ax.loglog(
         h_vec[2, :],
         sixth_order_ref,
-        color="orange",
+        color="coral",
         linestyle="--",
         label="6th order reference",
     )
-    ax.loglog(h_vec[2, :], error_vec[2, :], color="orange", label="6th order")
+    ax.loglog(h_vec[2, :], error_vec[2, :], color="coral", label="6th order")
     ax.set_xlabel("Step size [h]")
     ax.set_ylabel("Error")
     plt.xticks(h_vec[0, :])
+    ax.grid(visible=True, axis="both")
     plt.legend()
     plt.show()
 

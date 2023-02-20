@@ -119,7 +119,7 @@ def l2_norm(vec, h):
 
 def compute_error(u, u_exact, hx):
     """Compute discrete l2 error"""
-    error_vec = u - u_exact
+    error_vec = u.flatten() - u_exact
     relative_l2_error = l2_norm(error_vec, hx) / l2_norm(u_exact, hx)
     return relative_l2_error
 
