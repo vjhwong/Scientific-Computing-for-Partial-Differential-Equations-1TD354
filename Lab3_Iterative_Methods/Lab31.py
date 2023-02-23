@@ -27,10 +27,11 @@ import scipy.sparse.linalg as spsplg
 ##   - Matplotlib 3.6.3                                                             ##
 ##                                                                                  ##
 ######################################################################################
-    
+
+
 def main():
-    Nx = 6
-    Ny = 6
+    Nx = 2 ** (1)
+    Ny = 2 ** (3)
     plot_solution = True
     A, _, _, _, _ = soapfilm(Nx, Ny, plot_solution)
     plt.spy(A)
@@ -42,8 +43,9 @@ def timed_runs():
     Ns = [100, 200, 400]
     for Nx in Ns:
         for Ny in Ns:
-            _, _, _, _, _  = soapfilm(Nx, Ny, plot_solution)
+            _, _, _, _, _ = soapfilm(Nx, Ny, plot_solution)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()
-    #timed_runs()
+    # timed_runs()
