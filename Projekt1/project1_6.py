@@ -27,7 +27,7 @@ def run_simulation(mx=200, my=100):
 
     # Model parameters
     c = 1  # wave speed
-    T = 3  # end time
+    T = 0.000001  # end time
     sigma = 0.05
     x_west = -1  # west boundary
     x_east = 1  # east boundary

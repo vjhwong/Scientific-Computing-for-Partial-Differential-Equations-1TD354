@@ -30,8 +30,8 @@ import scipy.sparse.linalg as spsplg
 
 
 def main():
-    Nx = 2 ** (1)
-    Ny = 2 ** (3)
+    Nx = 12
+    Ny = 6
     plot_solution = True
     A, _, _, _, _ = soapfilm(Nx, Ny, plot_solution)
     plt.spy(A)

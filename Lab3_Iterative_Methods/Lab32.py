@@ -1,4 +1,5 @@
 from laplace_equation import laplace_equation
+import time
 
 ######################################################################################
 ##                                                                                  ##
@@ -19,12 +20,25 @@ from laplace_equation import laplace_equation
 ##                                                                                  ##
 ######################################################################################
 
+
+def time_function(function, N, method):
+    tstart = time.perf_counter()
+    function(N, method, show_plots=False)
+    tstop = time.perf_counter()
+    # print(f"Time for {method}: {tstop-tstart}")
+    return tstop - tstart
+
+
 def main():
     N = 100
-    laplace_equation(N, 'jacobi')
-    laplace_equation(N, 'gauss-seidel')
-    laplace_equation(N, 'conjugate-gradient')
-    
+    run_time_jacobi = time_function(laplace_equation, N, "jacobi")
+    run_time_gs = time_function(laplace_equation, N, "gauss-seidel")
+    run_time_cg = time_function(laplace_equation, N, "conjugate-gradient")
 
-if __name__ == '__main__':
+    print(f"Run time for Jacobi: {run_time_jacobi}")
+    print(f"Run time for Gauss-Seidel: {run_time_gs}")
+    print(f"Run time for Conjugate Gradient: {run_time_cg}")
+
+
+if __name__ == "__main__":
     main()
