@@ -1,8 +1,8 @@
 import numpy as np
 import numpy.linalg as nplg
 import scipy.sparse.linalg as spsplg
-from conjugate_gradient_solve import conjugate_gradient_solve
-from project2_1 import jacobi_solve, jacobi_setup
+from cgs import conjugate_gradient_solve
+from jacobi import jacobi_solve, jacobi_setup
 from system_matrix import system_matrix as test_matrix
 
 
@@ -29,3 +29,9 @@ def test_solver(n=1000, N=3, method="lu", tol=1e-6):
 
         if nplg.norm(x - x_true) / nplg.norm(x_true) > 10 * tol:
             print(f"Error! {method} yields an error larger than {10*tol:.2e}.")
+
+    print(f"Method: {method}")
+    if method in ["jacobi", "cg"]:
+        print(f"Number of iterations: {n_iter}")
+    print(f"x: {x.shape}")
+    print()
