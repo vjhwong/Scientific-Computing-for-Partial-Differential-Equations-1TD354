@@ -10,3 +10,12 @@ def system_matrix(n):
     )
     A = sps.csr_matrix(A)
     return A
+
+
+def main():
+    A = system_matrix(4)
+    print(A.toarray())
+
+
+if __name__ == "__main__":
+    main()
