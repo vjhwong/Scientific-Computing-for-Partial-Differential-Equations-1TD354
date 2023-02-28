@@ -2,6 +2,7 @@ import numpy as np
 import scipy.sparse as spsp
 import scipy.sparse.linalg as splg
 import matplotlib.pyplot as plt
+from rungekutta4 import step
 
 
 def stiffness_matrix_assembler(x):
@@ -34,6 +35,10 @@ def my_load_vector_assembler(x):
         B[i] = B[i] + f(x[i]) * h / 2
         B[i + 1] = B[i + 1] + f(x[i + 1]) * h / 2
     return B
+
+
+def f(x, k=100 * 2 * np.pi):
+    return np.sin(k * x)
 
 
 def main():
