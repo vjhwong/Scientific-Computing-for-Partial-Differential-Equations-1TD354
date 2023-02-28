@@ -6,8 +6,8 @@ import matplotlib.pyplot as plt
 
 def stiffness_matrix_assembler(x):
     """
-    Assembles stiffness matrix given a vector x of node
-    coordinates
+    Assembles stiffness matrix
+    Inpus is vector x of node coordinates
     """
     N = len(x) - 1  # number of elements
     A = spsp.dok_matrix((N + 1, N + 1))  # initialize stiffness matrix
@@ -20,6 +20,20 @@ def stiffness_matrix_assembler(x):
     A[0, 0] = 1e6  # adjust for BC
     A[N, N] = 1e6
     return A.tocsr()
+
+
+def my_load_vector_assembler(x):
+    """
+    Returns the assembled load vector b.
+    Input is a vector x of node coords.
+    """
+    N = len(x) - 1
+    B = np.zeros(N + 1)
+    for i in range(N):
+        h = x[i + 1] - x[i]
+        B[i] = B[i] + f(x[i]) * h / 2
+        B[i + 1] = B[i + 1] + f(x[i + 1]) * h / 2
+    return B
 
 
 def main():
