@@ -1,7 +1,7 @@
 import numpy as np
 import scipy.sparse.linalg as spsplg
 import scipy.linalg as splg
-import operators.py as ops
+import operators as ops
 import matplotlib.pyplot as plt
 import time
 import rungekutta4 as rk4
