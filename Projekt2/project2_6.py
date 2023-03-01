@@ -51,14 +51,19 @@ def load_vector_assembler(x):
 
 
 def f(x, k=100 * 2 * np.pi):
+    """Calculates initial data"""
     return np.sin(k * x)
 
 
 def u_exact(x, t, a, k):
+    """Calculate the exact solution"""
     return np.sin(k * x) * np.exp(-a * t * k**2)
 
+def relative_error(u, u_exact):
+    """Calculate the relative error"""
+    return (np.linalg.norm(u) / np.linalg.norm(u_exact))
 
-def run_simulation(n, method):
+def run_simulation(n: int, method: str):
     """
     Run simulation of heat equation in 1D with
     homogeneous Dirichlet boundary conditions.
@@ -92,21 +97,29 @@ def run_simulation(n, method):
     M = mass_matrix_assembler(xvec)
     B = load_vector_assembler(xvec)
 
+    def rhs(A, u, M, method):
+        A_u = A@u
+        if method == "CGS":
+            return conjugate_gradient_solve(M, A_u, tol=tol)
+        elif method == "LU":
+            lu = splg.splu(M)
+            return lu.solve(A_u)
+        else:
+            raise NotImplementedError("Method is not implemented")
+        
     # Initialize time and solution
     t = 0
-    if method == "LU":
-        lu = splg.splu(A)
-        u = lu.solve(B)
-    elif method == "CGS":
-        tol = 1e-6
-        u, n_iter = conjugate_gradient_solve(A, B, tol=tol)
-    else:
-        raise NotImplementedError("Method not implemented")
-
-
+    
+    for _ in range(mt -1)
+    
 def main():
     n_vec = [2_000, 4_000, 8_000]
-    pass
+    methods = ["LU", "CGS"]
+    runtime = np.zeros((len(methods), len(n_vec)))
+    
+    for method in methods:
+        for n in n_vec:
+            runtime[method][n].append(run_simulation(n, method))
 
 
 if __name__ == "__main__":
