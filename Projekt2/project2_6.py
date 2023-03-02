@@ -58,7 +58,7 @@ def run_simulation(n: int, method: str):
     """
 
     # model parameters:
-    T = 10e-5  # End time
+    T = 1e-5  # End time
     a = 1  # Heat equation coefficient
     xl = 0  # Left boundary
     xr = 1  # Right boundary
@@ -104,7 +104,7 @@ def run_simulation(n: int, method: str):
     return u, (time_end - time_start)
 
 
-def calculate_u_exact(n, t=10e-5, a=1, k=100 * 2 * np.pi, xl=0, xr=1):
+def calculate_u_exact(n, t=1e-5, a=1, k=100 * 2 * np.pi, xl=0, xr=1):
     """Calculate the exact solution"""
     h = (xr - xl) / n
     x = np.linspace(xl + h, xr - h, n - 1)
