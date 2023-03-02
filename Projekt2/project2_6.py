@@ -98,9 +98,8 @@ def run_simulation(n: int, method: str):
     for _ in range(mt - 1):
         u, t = FEM_step(rhs, A, u, M, method, t, ht)
     time_end = time.perf_counter()
-    
+
     print(f"Method: {method}\nn: {n}\nRuntime: {(time_end - time_start)}")
-    $
     # Return solution vector and runtime
     return u, (time_end - time_start)
 
@@ -114,13 +113,14 @@ def calculate_u_exact(n, t=10e-5, a=1, k=100 * 2 * np.pi, xl=0, xr=1):
 
 def relative_error(u, u_exact):
     """Calculate the relative error"""
-    return np.linalg.norm(u) / np.linalg.norm(u_exact)
+    print(np.linalg.norm(u - u_exact) / np.linalg.norm(u_exact))
+    return np.linalg.norm(u - u_exact) / np.linalg.norm(u_exact)
 
 
 def main():
     # Lists that contain n and methods we want to evaluate
     n_vec = [2_000, 4_000, 8_000]
-    methods = ["LU", "CGS"]
+    methods = ["CGS", "LU"]
 
     # Initialize arrays to hold the relative errors and runtime
     rel_error = np.zeros((len(methods), len(n_vec)))
